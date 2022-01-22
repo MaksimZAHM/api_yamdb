@@ -48,7 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (isAdminPermission, )
     filter_backends = [filters.SearchFilter, ]
     search_fields = ('username', )
-    lookup_fileds = 'username'
+    lookup_field = 'username'
     pagination_class = pagination.LimitOffsetPagination
 
     @action(methods=['GET', 'PATCH'],
