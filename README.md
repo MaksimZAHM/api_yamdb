@@ -67,7 +67,7 @@ python manage.py runserver
 ### Разработчики группового проекта
 
 * __Адиль Акылбаев__
-E-mail: [Teijodes@yandex.kz](mailto:Teijodes@yandex.kz)
+E-mail: [teijodes@yandex.kz](mailto:teijodes@yandex.kz)
 
 * __Хуршед Бобоев__
 E-mail: [khurshed-shavkatzhonovich@yandex.ru](mailto:khurshed-shavkatzhonovich@yandex.ru)

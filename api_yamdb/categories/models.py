@@ -46,13 +46,13 @@ class Title(models.Model):
         ordering = ('id', )
 
     def __str__(self):
-        cropped_text = textwrap.shorten(
+        short_descrip = textwrap.shorten(
             self.description,
             width=100,
             placeholder='...'
         )
 
-        return f'{self.name} {self.year} {cropped_text}'
+        return f'{self.name} {self.year} {short_descrip}'
 
 
 class TitlesGenres(models.Model):

@@ -1,7 +1,10 @@
+import datetime as dt
+from django.db.models import Avg
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from reviews.models import Comment, Review
+from categories.models import Categories, Genres, Title
 
 
 User = get_user_model()
@@ -94,3 +97,72 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         exclude = ('review', )
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Categories
+        exclude = ('id', )
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Genres
+        exclude = ('id', )
+
+
+class CreateTitleSerializer(serializers.ModelSerializer):
+
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Categories.objects.all()
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genres.objects.all(),
+        many=True
+    )
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+    def validate_year(self, value):
+        if value <= dt.datetime.now().year:
+            return value
+        raise serializers.ValidationError(
+            'Ошибка года выпуска. Год не может быть больше текущего!'
+        )
+
+    def validate_category(self, value):
+        if not Categories.objects.filter(slug=value).exists():
+            raise serializers.ValidationError(
+                'Категории с таким slug не существует'
+            )
+        return value
+
+    def validate_genre(self, value):
+        for genre in value:
+            if not Genres.objects.filter(slug=genre).exists():
+                raise serializers.ValidationError(
+                    'Жанра с таким slug не существует'
+                )
+        return value
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    rating = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    genre = GenreSerializer(many=True)
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+    def get_rating(self, obj):
+        rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
+        if not rating:
+            return None
+        return round(rating)
