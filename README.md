@@ -66,11 +66,11 @@ python manage.py runserver
 
 ### Разработчики группового проекта
 
-* Адиль Акылбаев
+* __Адиль Акылбаев__
 E-mail: [Teijodes@yandex.kz](mailto:Teijodes@yandex.kz)
 
-* Хуршед Бобоев
+* __Хуршед Бобоев__
 E-mail: [khurshed-shavkatzhonovich@yandex.ru](mailto:khurshed-shavkatzhonovich@yandex.ru)
 
-* Максим Замятин
+* __Максим Замятин__
 E-mail: [mm.zamyatin@gmail.com](mailto:mm.zamyatin@gmail.com)
