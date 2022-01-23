@@ -1,12 +1,12 @@
-# from categories.models import Title
+from categories.models import Title
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import User
 
 
 class Review(models.Model):
-    """title = models.ForeignKey(Title, on_delete=models.CASCADE,
-                              related_name='reviews')"""
+    title = models.ForeignKey(Title, on_delete=models.CASCADE,
+                              related_name='reviews')
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='reviews')
@@ -18,13 +18,13 @@ class Review(models.Model):
                                     verbose_name='Дата публикации отзыва',
                                     db_index=True,)
 
-    """class Meta:
+    class Meta:
         constraints = (
             models.UniqueConstraint(fields=('author', 'title'),
                                     name='unique review'),
         )
         verbose_name = 'Отзыв'
-        verbose_name_plural = 'Отзывы'"""
+        verbose_name_plural = 'Отзывы'
 
 
 class Comment(models.Model):
