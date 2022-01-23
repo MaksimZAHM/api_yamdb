@@ -1,11 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-<<<<<<< HEAD
 from rest_framework.validators import UniqueValidator
-=======
 from reviews.models import Comment, Review
-# from rest_framework.validators import UniqueValidator
->>>>>>> feature/3/review.comments
+
 
 User = get_user_model()
 
