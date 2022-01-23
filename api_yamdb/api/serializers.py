@@ -1,6 +1,11 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+<<<<<<< HEAD
 from rest_framework.validators import UniqueValidator
+=======
+from reviews.models import Comment, Review
+# from rest_framework.validators import UniqueValidator
+>>>>>>> feature/3/review.comments
 
 User = get_user_model()
 
@@ -50,3 +55,45 @@ class TokenSerializer(serializers.ModelSerializer):
             'username',
             'confirmation_code'
         )
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Review
+        exclude = ('title', )
+
+    def validate(self, data):
+        if self.context['request'].method == 'PATCH':
+            return data
+
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs.get('title_id')
+
+        if Review.objects.filter(author=author, title=title_id).exists():
+            raise serializers.ValidationError(
+                'You can only leave one review '
+            )
+        return data
+
+    def validate_score(self, value):
+        if not 1 <= value <= 10:
+            raise serializers.ValidationError(
+                'enter a score from 1 to 10 '
+            )
+        return value
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Comment
+        exclude = ('review', )
