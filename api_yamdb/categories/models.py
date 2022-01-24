@@ -31,11 +31,12 @@ class Categories(models.Model):
 class Title(models.Model):
     name = models.CharField('Name of titles', max_length=200)
     year = models.PositiveSmallIntegerField(db_index=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         Categories,
         related_name='categories',
-        on_delete=models.SET_NULL, null=True
+        on_delete=models.SET_NULL, 
+        null=True
     )
     genre = models.ManyToManyField(Genres, through='TitlesGenres')
     rating = models.IntegerField(default=0)

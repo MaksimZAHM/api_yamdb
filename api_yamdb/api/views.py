@@ -12,6 +12,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from reviews.models import Review, Comment
 from categories.models import Categories, Genres, Title
+from api.filters import TitleFilter
 
 from api.serializers import (SignUpSerializer, UserSerializer,
                              TokenSerializer, ReviewSerializer, 
@@ -19,7 +20,8 @@ from api.serializers import (SignUpSerializer, UserSerializer,
                              GenreSerializer, TitleSerializer,
                              CreateTitleSerializer)
 from api.permissions import (isAdminPermission, isModeratorPermission,
-                             IsAuthorOrReadOnly, ReadOnlyPermission)
+                             IsAuthorOrReadOnly, ReadOnlyPermission,
+                             IsAdminOrReadOnlyPermission)
 
 
 User = get_user_model()
@@ -138,7 +140,7 @@ class MixinViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
 class GenreViewSet(MixinViewSet, viewsets.GenericViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (isAdminPermission, ReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ('name',)
     search_fields = ('name',)
@@ -148,7 +150,7 @@ class GenreViewSet(MixinViewSet, viewsets.GenericViewSet):
 class CategoryViewSet(MixinViewSet, viewsets.GenericViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (isAdminPermission, ReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ('name',)
     search_fields = ('name',)
@@ -158,9 +160,9 @@ class CategoryViewSet(MixinViewSet, viewsets.GenericViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (isAdminPermission, ReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    filterset_fields = ('name', 'category', 'genre', 'year',)
+    filterset_class = TitleFilter
     search_fields = ('name',)
     pagination_class = LimitOffsetPagination
 
