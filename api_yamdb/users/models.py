@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+ROLES = (
+        ('user', 'Пользователь'),
+        ('admin', 'Админ'),
+        ('moderator', 'Модератор')
+)
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -32,11 +38,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    ROLES = (
-        ('user', 'Пользователь'),
-        ('admin', 'Админ'),
-        ('moderator', 'Модератор')
-    )
     bio = models.TextField(
         max_length=1000,
         blank=True)

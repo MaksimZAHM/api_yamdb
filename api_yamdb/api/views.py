@@ -85,18 +85,17 @@ class UserViewSet(viewsets.ModelViewSet):
 def sign_up(request):
     username = request.data.get('username')
     serializer = SignUpSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        user = get_object_or_404(User, username=username)
-        confirmation_code = default_token_generator.make_token(user)
-        send_mail(
-            subject='Вы зарегистрировались на YAMDB!',
-            message=confirmation_code,
-            from_email=settings.EMAIL_FROM,
-            recipient_list=(user.email,)
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    user = get_object_or_404(User, username=username)
+    confirmation_code = default_token_generator.make_token(user)
+    send_mail(
+        subject=settings.EMAIL_DEFAULT_SUBJECT,
+        message=confirmation_code,
+        from_email=settings.EMAIL_FROM,
+        recipient_list=(user.email,)
+    )
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
