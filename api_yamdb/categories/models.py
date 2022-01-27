@@ -1,9 +1,15 @@
 import textwrap
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Genres(models.Model):
-    name = models.CharField('Name of genre', max_length=200, unique=True)
+    name = models.CharField(
+        'Name of genre',
+        help_text='Name of genre',
+        max_length=200,
+        unique=True
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -16,7 +22,12 @@ class Genres(models.Model):
 
 
 class Categories(models.Model):
-    name = models.CharField('Name of categories', max_length=200, unique=True)
+    name = models.CharField(
+        'Name of categories',
+        help_text='Name of categories',
+        max_length=200,
+        unique=True
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -29,17 +40,45 @@ class Categories(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField('Name of titles', max_length=200)
-    year = models.PositiveSmallIntegerField(db_index=True)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(
+        'Name of titles',
+        help_text='Name of titles',
+        max_length=200
+    )
+    year = models.PositiveSmallIntegerField(
+        'Release year of titles',
+        help_text='Release year of titles',
+        db_index=True
+    )
+    description = models.TextField(
+        blank=True, 
+        null=True,
+        verbose_name='Text of descriptions',
+        help_text='Text of descriptions'
+    )
     category = models.ForeignKey(
         Categories,
+        verbose_name='Name of categories',
+        help_text='Name of categories',
         related_name='categories',
         on_delete=models.SET_NULL,
         null=True
     )
-    genre = models.ManyToManyField(Genres, through='TitlesGenres')
-    rating = models.IntegerField(default=0)
+    genre = models.ManyToManyField(
+        Genres,
+        verbose_name='Name of ganres',
+        help_text='Name of ganres',
+        through='TitlesGenres'
+    )
+    rating = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name='Score of ratings',
+        help_text='Score of ratings',
+        validators=(
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        )
+    )
 
     class Meta:
         verbose_name = 'Title'
@@ -57,8 +96,16 @@ class Title(models.Model):
 
 
 class TitlesGenres(models.Model):
-    genre = models.ForeignKey(Genres, on_delete=models.CASCADE)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    genre = models.ForeignKey(
+        Genres,
+        related_name='titlesgenres',
+        on_delete=models.CASCADE
+    )
+    title = models.ForeignKey(
+        Title,
+        related_name='titlesgenres',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return f'{self.genre.slug}'

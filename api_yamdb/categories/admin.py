@@ -23,6 +23,6 @@ class TitleAdmin(admin.ModelAdmin):
         'category',
         'rating'
     )
-    list_filter = ('category')
-    search_fields = ('name')
+    list_filter = ('category',)
+    search_fields = ('name',)
     empty_value_display = '-пусто-'
