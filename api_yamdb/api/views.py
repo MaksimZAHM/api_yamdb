@@ -27,7 +27,13 @@ from api.permissions import (isAdminPermission, IsAdminOrReadOnlyPermission,
 User = get_user_model()
 
 
-@api_view(['POST'])
+class HTTPMethod:
+    GET = 'GET'
+    POST = 'POST'
+    PATCH = 'PATCH'
+
+
+@api_view([HTTPMethod.POST],)
 @permission_classes((AllowAny,))
 def get_token(request):
     username = request.data.get('username', None)
@@ -57,22 +63,22 @@ def get_token(request):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (isAdminPermission, )
-    filter_backends = [filters.SearchFilter, ]
+    permission_classes = (isAdminPermission,)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('username', )
     lookup_field = 'username'
     pagination_class = LimitOffsetPagination
 
-    @action(methods=['GET', 'PATCH'],
-            url_path='me',
+    @action(methods=(HTTPMethod.GET, HTTPMethod.PATCH),
+            url_path=settings.USER_ME,
             permission_classes=(IsAuthenticated, ),
             detail=False)
     def me(self, request):
-        if request.method == 'GET':
+        if request.method == HTTPMethod.GET:
             serializer = UserSerializer(request.user)
             return Response(serializer.data, status.HTTP_200_OK)
 
-        if request.method == 'PATCH':
+        if request.method == HTTPMethod.PATCH:
             serializer = UserSerializer(
                 request.user, request.data, partial=True)
             serializer.is_valid(raise_exception=True)
@@ -80,8 +86,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
+@api_view([HTTPMethod.POST],)
+@permission_classes((AllowAny,))
 def sign_up(request):
     username = request.data.get('username')
     serializer = SignUpSerializer(data=request.data)
@@ -155,7 +161,6 @@ class CategoryViewSet(MixinViewSet, viewsets.GenericViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_class = TitleFilter
@@ -164,6 +169,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         method = self.request.method
-        if method == 'POST' or method == 'PATCH':
+        if method == HTTPMethod.POST or method == HTTPMethod.PATCH:
             return CreateTitleSerializer
         return TitleSerializer

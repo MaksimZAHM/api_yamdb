@@ -1,4 +1,5 @@
 import datetime as dt
+from django.conf import settings
 from django.db.models import Avg
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -26,11 +27,11 @@ class UserSerializer(serializers.ModelSerializer):
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150,
-        validators=[UniqueValidator(queryset=User.objects.all())],
+        validators=(UniqueValidator(queryset=User.objects.all()),)
     )
     email = serializers.EmailField(
         max_length=254,
-        validators=[UniqueValidator(queryset=User.objects.all())],
+        validators=(UniqueValidator(queryset=User.objects.all()),)
     )
 
     class Meta:
@@ -38,14 +39,14 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
     def validate_username(self, value):
-        if value.lower() == 'me':
+        if value.lower() == settings.USER_ME:
             raise serializers.ValidationError(
                 'Для имени нельзя использовать {value}'
             )
         return value
 
 
-class TokenSerializer(serializers.ModelSerializer):
+class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     confirmation_code = serializers.CharField(max_length=100)
 

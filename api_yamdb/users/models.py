@@ -1,10 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+ADMIN = 'admin'
+MODERATOR = 'moderator'
+USER = 'user'
 ROLES = (
-        ('user', 'Пользователь'),
-        ('admin', 'Админ'),
-        ('moderator', 'Модератор')
+        (USER, 'Пользователь'),
+        (ADMIN, 'Админ'),
+        (MODERATOR, 'Модератор')
 )
 
 
@@ -64,4 +67,4 @@ class User(AbstractUser):
 
     @property
     def is_moderator(self):
-        return self.role == 'moderator' or self.is_staff
+        return self.role == MODERATOR or self.is_staff
